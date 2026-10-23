@@ -61,6 +61,13 @@ function hasSupportedHerdrPaneTarget(entry, options = {}) {
   return osPlatform === "darwin" || osPlatform === "linux";
 }
 
+// wmctrl and xdotool only see X11 windows; src/focus.js raises windows on
+// KDE Plasma through KWin scripting instead (#1001).
+function isKdeWaylandSession(env = process.env) {
+  return env.XDG_SESSION_TYPE === "wayland"
+    && String(env.XDG_CURRENT_DESKTOP || "").split(":").some((name) => name.toUpperCase() === "KDE");
+}
+
 function getSessionFocusTarget(entry, options = {}) {
   if (!entry || !entry.id) return { canFocus: false, type: null, url: null };
   if (entry.platform === "webui") return { canFocus: false, type: null, url: null };
@@ -155,4 +162,5 @@ module.exports = {
   getSessionFocusTarget,
   isDshDesktopSession,
   isFocusableLocalHudSession,
+  isKdeWaylandSession,
 };

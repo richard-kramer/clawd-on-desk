@@ -10,6 +10,7 @@ const {
   getFocusableLocalHudSessionIds,
   getSessionFocusTarget,
   isFocusableLocalHudSession,
+  isKdeWaylandSession,
 } = require("../src/session-focus");
 const { makeSessionKey } = require("../src/session-key");
 
@@ -365,5 +366,13 @@ describe("session focus helpers", () => {
     assert.strictEqual(isFocusableLocalHudSession({ sourcePid: 1 }), false);
     assert.deepStrictEqual(getFocusableLocalHudSessionIds({ sessions: "bad" }), []);
     assert.deepStrictEqual(getFocusableLocalHudSessionIds(null), []);
+  });
+
+  it("detects a KDE Wayland session", () => {
+    assert.strictEqual(isKdeWaylandSession({ XDG_SESSION_TYPE: "wayland", XDG_CURRENT_DESKTOP: "KDE" }), true);
+    assert.strictEqual(isKdeWaylandSession({ XDG_SESSION_TYPE: "wayland", XDG_CURRENT_DESKTOP: "ubuntu:KDE" }), true);
+    assert.strictEqual(isKdeWaylandSession({ XDG_SESSION_TYPE: "x11", XDG_CURRENT_DESKTOP: "KDE" }), false);
+    assert.strictEqual(isKdeWaylandSession({ XDG_SESSION_TYPE: "wayland", XDG_CURRENT_DESKTOP: "GNOME" }), false);
+    assert.strictEqual(isKdeWaylandSession({ XDG_SESSION_TYPE: "wayland" }), false);
   });
 });
